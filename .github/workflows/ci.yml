@@ -1,0 +1,28 @@
+name: Sussy Baka OS checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  source-and-package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -r tests/requirements.txt
+      - name: Run source checks and tests
+        run: ./scripts/verify-project.sh
+
+  qemu-release-check:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: [self-hosted, linux, sussy-iso-qemu]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require release ISO artifact
+        run: test -s dist/sussy-baka-os-26.04.1-amd64.iso
+      - name: Run interactive QEMU boot
+        run: ./scripts/test-iso-qemu.sh dist/sussy-baka-os-26.04.1-amd64.iso
