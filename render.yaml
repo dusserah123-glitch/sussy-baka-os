@@ -1,0 +1,38 @@
+# Render Blueprint for the Sussy Account API.
+# SMTP values are prompted for by Render; never commit credentials.
+services:
+  - type: web
+    name: sussy-account-api
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: services/sussy-account/Dockerfile
+    dockerContext: services/sussy-account
+    healthCheckPath: /health
+    disk:
+      name: sussy-account-data
+      mountPath: /var/lib/sussy-account
+      sizeGB: 10
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+      - key: SUSSY_ACCOUNT_SECRET
+        generateValue: true
+      - key: SUSSY_ACCOUNT_DB
+        value: /var/lib/sussy-account/accounts.sqlite3
+      - key: SUSSY_ACCOUNT_DEV_MODE
+        value: "false"
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_FROM
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_SSL
+        value: "false"
